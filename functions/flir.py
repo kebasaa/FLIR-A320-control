@@ -45,34 +45,34 @@ class FLIR(object):
 		
     # Set relative humidity [0.0-1-0]
     def setRH(self, rh): # standard should be rh= 0.5
-        self.tn.write(b'rset .image.sysimg.basicImgData.objectParams.relHum ' + str(rh) + '\n')
+        self.tn.write(b'rset .image.sysimg.basicImgData.objectParams.relHum ' + str(rh).encode('ascii') + b'\n')
         self.tn.read_until(b'>',1).decode('ascii')
 		
     # Set object distance [m]
     def setDist(self, distance):
-        self.tn.write(b'rset .image.sysimg.basicImgData.objectParams.objectDistance ' + str(distance) + '\n')
+        self.tn.write(b'rset .image.sysimg.basicImgData.objectParams.objectDistance ' + str(distance).encode('ascii') + b'\n')
         self.tn.read_until(b'>',1).decode('ascii')
 		
     # Set ambient T [°C]
     def setAmbT(self, T):
-        self.tn.write(b'rset .image.sysimg.basicImgData.objectParams.ambTemp ' + str(T + 273.15) + '\n')
+        self.tn.write(b'rset .image.sysimg.basicImgData.objectParams.ambTemp ' + str(T + 273.15).encode('ascii') + b'\n')
         self.tn.read_until(b'>',1).decode('ascii')
 		
     # Set atm T [°C]
     def setAtmT(self, T):
-        self.tn.write(b'rset .image.sysimg.basicImgData.objectParams.atmTemp ' + str(T + 273.15) + '\n')
+        self.tn.write(b'rset .image.sysimg.basicImgData.objectParams.atmTemp ' + str(T + 273.15).encode('ascii') + b'\n')
         self.tn.read_until(b'>',1).decode('ascii')
 		
     # Set object emissivity (0.001-1.0)
     # Set atm T [°C]
     def setEmiss(self, E):
-        self.tn.write(b'rset .image.sysimg.basicImgData.objectParams.emissivity ' + str(E) + '\n')
+        self.tn.write(b'rset .image.sysimg.basicImgData.objectParams.emissivity ' + str(E).encode('ascii') + b'\n')
         self.tn.read_until(b'>',1).decode('ascii')
 		
     # Set colour palette
     # pal can be: bw, iron, rainbow. I like iron the most
     def setPal(self, pal):
-        self.tn.write(b'rset .image.sysimg.palette.readFile ' + pal.encode('ascii') + '\n')
+        self.tn.write(b'rset .image.sysimg.palette.readFile ' + pal.encode('ascii') + b'\n')
         self.tn.read_until(b'>',1).decode('ascii')
 		
     # Quick Autofocus

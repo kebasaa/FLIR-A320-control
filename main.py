@@ -116,13 +116,14 @@ class Main(QMainWindow, Ui_Dialog):
 
     def shootNow(self):
         log.info("shoot to " + self.logFolder)
+        folder = ''
         if(self.logFolder == ''):
-            pass
+            folder = self.logFolder
         else:
-            self.logFolder += "/"
+            folder = self.logFolder + "/"
 			
         try:
-            self.currentImg = self.cam.shootJPG(self.logFolder)
+            self.currentImg = self.cam.shootJPG(folder)
         except:
             QMessageBox.warning(None,"Connect","Please connect the camera.")
         else:
@@ -155,6 +156,7 @@ class Main(QMainWindow, Ui_Dialog):
 
     def setRH(self):
         log.info("set relative humidity " + self.ui.rh.text())
+        self.cam.setRH(float(self.ui.rh.text())/100)
         try:
             self.cam.setRH(float(self.ui.rh.text())/100)
         except:
@@ -195,7 +197,7 @@ class Main(QMainWindow, Ui_Dialog):
             # Check if devices are connected
             if(self.flir_running == True):
                 # Run every X seconds
-                self.autofocusFull() # first focus
+                #self.autofocusFull() # first focus
                 self.ui.LogStart.setText("Stop logging")
                 self.timer.start(int(self.ui.IntervalTime.text())*1000)
                 self.logging_running = True
