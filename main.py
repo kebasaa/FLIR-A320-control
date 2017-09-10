@@ -121,7 +121,7 @@ class Main(QMainWindow, Ui_Dialog):
             folder = self.logFolder
         else:
             folder = self.logFolder + "/"
-			
+        
         try:
             self.currentImg = self.cam.shootJPG(folder)
         except:
@@ -130,7 +130,7 @@ class Main(QMainWindow, Ui_Dialog):
             # Now show the resulting image
             log.info("Created file " + self.currentImg)
             image = QtGui.QImage(self.currentImg)
-            image = image.scaled(320,240, aspectRatioMode=QtCore.Qt.KeepAspectRatio, transformMode=QtCore.Qt.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+            image = image.scaled(640,480, aspectRatioMode=QtCore.Qt.KeepAspectRatio, transformMode=QtCore.Qt.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
             self.ui.currentImg.setPixmap(QtGui.QPixmap.fromImage(image))
 		
     def setAtmT(self):
@@ -206,7 +206,10 @@ class Main(QMainWindow, Ui_Dialog):
 			
     def closeEvent(self, event): # This is when the window is clicked to close
         log.info("Shutting down application")
-        self.cam.close()
+        try:
+            self.cam.close()
+        except:
+            pass
         log.info("Shutdown completed")
         log.info('------------------')
         event.accept()

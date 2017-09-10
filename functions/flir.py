@@ -121,7 +121,7 @@ class FLIR(object):
         # Set the filename for storage on the computer, with date/time info
         filename = path + 'file-' + str(datetime.datetime.now().strftime('%Y%m%d-%H%M%S')) + '.jpg'
         # Transmit file from the camera through FTP
-        ftp = ftplib.FTP('192.168.1.10')
+        ftp = ftplib.FTP(self.host)
         ftp.login()
         ftp.cwd('/')
         ftp.retrbinary('RETR ' + 'temp.jpg', open(filename,'wb').write)
@@ -139,7 +139,7 @@ class FLIR(object):
         # Set the filename for storage on the computer, with date/time info
         filename = path + 'file-' + str(datetime.datetime.now().strftime('%Y%m%d-%H%M%S')) + '.fff'
         # Transmit file from the camera through FTP
-        ftp = ftplib.FTP('192.168.1.10')
+        ftp = ftplib.FTP(self.host)
         ftp.login()
         ftp.cwd('/')
         ftp.retrbinary('RETR ' + 'temp.fff', open(filename,'wb').write)
