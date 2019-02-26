@@ -8,7 +8,7 @@ log = logging.getLogger('root')
 class FLIR(object):
     def __init__(self, host):
         self.tn = None
-        self.host = host # should be 192.168.1.10
+        self.host = host # The host IP address given by the main program
         self.port = 23
         self.timeout = 2
 
