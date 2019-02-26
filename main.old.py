@@ -17,7 +17,6 @@ import json # used to parse config.json
 from os.path import expanduser # for user directory
 import os.path
 import os
-import multiprocessing
 
 # Import Qt5
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -336,33 +335,14 @@ class Main(QMainWindow, Ui_Dialog):
         event.accept()
 			
 		
-def qapp():
-    app = QApplication(sys.argv)
-    myapp = Main()
-    myapp.show()
-    sys.exit(app.exec_())
-	
 # Show the image
 if __name__ == "__main__":
     # This tells Windows to use my icon
     myappid = 'mycompany.myproduct.subproduct.version' # arbitrary string
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 	
-    x = 1
-    # Start qapp as a process
-    while(x < 100):
-        x += 1
-        log.info("Starting 3h timeout")
-        print("----------------------------------------------------------------------------")
-        myapp = multiprocessing.Process(target=qapp)
-        myapp.start()
-        # Wait for 10 seconds or until process finishes
-        myapp.join(60*60*6)
-        # If thread is still active
-        if myapp.is_alive():
-            log.info("Killing IR program")
-            # Terminate
-            myapp.terminate()
-            myapp.join()
-        print("----------------------------------------------------------------------------")
+    app = QApplication(sys.argv)
+    myapp = Main()
+    myapp.show()
 	
+    sys.exit(app.exec_())

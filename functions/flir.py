@@ -17,8 +17,49 @@ class FLIR(object):
             self.tn = telnetlib.Telnet(self.host,self.port,self.timeout)
         except socket.timeout :
             log.info("FLIR.connect() socket.timeout")
+            return(False)
         # when connecting, just read until you reach the prompt
-        self.tn.read_until(b'msc]',1)
+        #try:
+            #self.tn.read_until(b'msc]',1)
+            #self.tn.read_all()
+        #except:
+            #self.debug("TN connection error")
+        #else:
+            #self.nuc()
+            #x = true
+            #log.debug(x)
+        #while(True):
+        #    #log.debug("test2")
+        #    try:
+        #        self.tn.read_until(b'msc]',1)
+        #        ##self.tn.read_all()
+        #    except:
+        #        self.debug("TN connection error")
+        #    else:
+        #        self.nuc()
+        #        break
+        else:
+            while(True):
+                try:
+                    self.tn.read_until(b'msc]',1)
+                    ##self.tn.read_all()
+                except:
+                    self.debug("TN connection error")
+                else:
+                    self.nuc()
+                    break
+        return(True)
+		
+    def disconnect(self):
+        #try :
+        #    self.tn = telnetlib.Telnet(self.host,self.port,self.timeout)
+        #except socket.timeout :
+        #    log.info("FLIR.connect() socket.timeout")
+        # when connecting, just read until you reach the prompt
+        #self.tn.read_until(b'msc]',1)
+        self.tn.get_socket().shutdown(socket.SOCK_WR)
+        self.tn.read_all()
+        self.tn.close()
 		
     # Set camera date and time to the computer time
     def setDateTime(self):
@@ -75,6 +116,26 @@ class FLIR(object):
         self.tn.write(b'rset .image.sysimg.palette.readFile ' + pal.encode('ascii') + b'\n')
         self.tn.read_until(b'>',1).decode('ascii')
 		
+	# reboot command
+    def reboot(self):
+        self.tn.write(b'Restart\n')
+        self.tn.read_until(b'>',1).decode('ascii')
+        #self.disconnect()
+        #self.tn.close()
+		
+	# NUC calibration
+    def nuc(self):
+        #self.tn.write(b'nuc\n') # perform NUC now
+        self.tn.write(b'rset .tcomp.services.autoNuc.active true\n') # Set to automatically perform NUC
+        #self.tn.write(b'rset .image.services.nuc.commit true\n')     # perform NUC now
+        #time.sleep(10)
+        self.tn.read_until(b'>',1).decode('ascii')
+		
+    def factoryReset(self):
+        #self.tn.write(b'rset .system.restart true\n')
+        self.tn.write(b'rset .power.actions.factorydefault true\n')
+        self.tn.read_until(b'>',1).decode('ascii')
+		
     # Quick Autofocus
     def quickFocus(self):
         self.tn.write(b'rset .system.focus.autofast true\n')
@@ -114,21 +175,35 @@ class FLIR(object):
             self.tn.read_until(b'>',1).decode('ascii')
 		
     # Shoot image and transfer
-    def shootJPG(self,path): #TODO: OPTION TO SET PATH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    def shootJPG(self,path):
+        #self.nuc()
         # shoot the image and store it temporarily on the camera
         self.tn.write(b'store -j temp.jpg\n')
         time.sleep(2)
         # Set the filename for storage on the computer, with date/time info
         filename = path + 'file-' + str(datetime.datetime.now().strftime('%Y%m%d-%H%M%S')) + '.jpg'
+        # disconnect from telnet so as not to interfere with FTP
+        self.tn.close()
+        #self.disconnect()
         # Transmit file from the camera through FTP
-        ftp = ftplib.FTP(self.host)
-        ftp.login()
-        ftp.cwd('/')
-        ftp.retrbinary('RETR ' + 'temp.jpg', open(filename,'wb').write)
-        ftp.quit()
+        for i in range(0,10):
+            try:
+                ftp = ftplib.FTP(self.host, timeout=5)
+                ftp.set_pasv(True)
+                #ftp.set_pasv(False)
+                ftp.login()
+                ftp.cwd('/')
+                ftp.retrbinary('RETR ' + 'temp.jpg', open(filename,'wb').write)
+                ftp.quit()
+                break
+            except:
+                log.info("FLIR.connect() FTP socket.timeout")
+        # reconnect to telnet
+        self.connect()
         # After successful transmission of the file, delete it on the camera
         self.tn.write(b'del temp.jpg\n')
         self.tn.read_until(b'>',1).decode('ascii')
+        #self.nuc()
         return filename
 		
     def shootFFF(self,path): #TODO: OPTION TO SET PATH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -140,6 +215,7 @@ class FLIR(object):
         filename = path + 'file-' + str(datetime.datetime.now().strftime('%Y%m%d-%H%M%S')) + '.fff'
         # Transmit file from the camera through FTP
         ftp = ftplib.FTP(self.host)
+        ftp.set_pasv(False)
         ftp.login()
         ftp.cwd('/')
         ftp.retrbinary('RETR ' + 'temp.fff', open(filename,'wb').write)
@@ -166,7 +242,11 @@ class FLIR(object):
             return False
 
     def close(self):
-        self.tn.write(b'exit\n')
+        try:
+            self.tn.write(b'exit\n')
+        except:
+            log.debug("Error closing connection")
+        ##self.disconnect()
         self.tn.close()
         return True
 
