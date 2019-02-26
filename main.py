@@ -350,9 +350,9 @@ if __name__ == "__main__":
 	
     x = 1
     # Start qapp as a process
-    while(x < 100):
+    while(1): #(x < 100):
         x += 1
-        log.info("Starting 3h timeout")
+        log.info("Starting 6h timeout")
         print("----------------------------------------------------------------------------")
         myapp = multiprocessing.Process(target=qapp)
         myapp.start()
