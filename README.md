@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/102614780.svg)](https://zenodo.org/badge/latestdoi/102614780)
+
 # FLIR-A320-control
 This program is based on Python 3 on Windows and can be used to control a [FLIR A320 infrared camera](http://flir.com/uploadedFiles/Security/Products/A-Series/a3xxPT-Series-Users-Manual.pdf) through telnet. It shouldn't be difficult to port to other systems. The main functions include some settings and a logging functionality that takes a picture at regular intervals.
 
