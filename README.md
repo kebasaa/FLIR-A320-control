@@ -18,6 +18,7 @@ In the command window, enter:
 ## How to Cite
 
 Jonathan D. Muller. (2020, October 14). FLIR-A320-control: Control FLIR A320 infrared camera. doi: 10.5281/zenodo.4088156 (URL: https://zenodo.org/badge/latestdoi/102614780), Python script
+
 [![DOI](https://zenodo.org/badge/102614780.svg)](https://zenodo.org/badge/latestdoi/102614780)
 
 ## License
